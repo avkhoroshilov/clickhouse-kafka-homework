@@ -75,3 +75,12 @@ docker compose run --rm app python scripts/benchmark.py
 | Запрос по агрегату | 2.746 | 51 | 1 614 |
 
 Итоговый запрос ускорился примерно в 14 раз, сжатое хранение основной таблицы уменьшилось на 40.6%
+
+## Повторный запуск
+Перед повторной загрузкой или переходом с demo.csv на полный набор сбросьте данные Kafka и ClickHouse:
+
+```bash
+docker compose down -v
+docker compose up -d
+docker compose run --rm app python scripts/run_pipeline.py data/train.csv data/test.csv --output results/max_transaction_by_state.csv
+```
