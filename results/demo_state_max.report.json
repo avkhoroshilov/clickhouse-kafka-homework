@@ -1,0 +1,16 @@
+{
+  "status": "ok",
+  "input_files": {
+    "demo.csv": 16
+  },
+  "csv_rows": 16,
+  "kafka_delivered": 16,
+  "clickhouse_rows": 16,
+  "states": 5,
+  "checks": [
+    "CSV row count = Kafka deliveries = ClickHouse row count",
+    "CSV maxima = raw SQL = optimized SQL"
+  ],
+  "result_csv": "results/demo_state_max.csv",
+  "elapsed_seconds": 2.081
+}

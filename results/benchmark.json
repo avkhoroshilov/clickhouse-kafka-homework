@@ -1,0 +1,99 @@
+{
+  "clickhouse_version": "25.3.2.39",
+  "runs_per_query": 3,
+  "queries": {
+    "baseline": {
+      "median_client_ms": 38.716,
+      "runs": [
+        {
+          "read_rows": 1048575,
+          "read_bytes": 67397661,
+          "engine_elapsed_ms": 36.272,
+          "client_elapsed_ms": 37.1
+        },
+        {
+          "read_rows": 1048575,
+          "read_bytes": 67397661,
+          "engine_elapsed_ms": 38.468,
+          "client_elapsed_ms": 39.251
+        },
+        {
+          "read_rows": 1048575,
+          "read_bytes": 67397661,
+          "engine_elapsed_ms": 37.939,
+          "client_elapsed_ms": 38.716
+        }
+      ]
+    },
+    "optimized_raw": {
+      "median_client_ms": 32.228,
+      "runs": [
+        {
+          "read_rows": 1048575,
+          "read_bytes": 19937809,
+          "engine_elapsed_ms": 35.035,
+          "client_elapsed_ms": 35.786
+        },
+        {
+          "read_rows": 1048575,
+          "read_bytes": 19937809,
+          "engine_elapsed_ms": 31.428,
+          "client_elapsed_ms": 32.228
+        },
+        {
+          "read_rows": 1048575,
+          "read_bytes": 19937809,
+          "engine_elapsed_ms": 29.471,
+          "client_elapsed_ms": 30.296
+        }
+      ]
+    },
+    "optimized_aggregate": {
+      "median_client_ms": 2.746,
+      "runs": [
+        {
+          "read_rows": 51,
+          "read_bytes": 7497,
+          "engine_elapsed_ms": 2.181,
+          "client_elapsed_ms": 2.746
+        },
+        {
+          "read_rows": 51,
+          "read_bytes": 7497,
+          "engine_elapsed_ms": 2.168,
+          "client_elapsed_ms": 2.706
+        },
+        {
+          "read_rows": 51,
+          "read_bytes": 7497,
+          "engine_elapsed_ms": 2.226,
+          "client_elapsed_ms": 2.775
+        }
+      ]
+    }
+  },
+  "storage": [
+    {
+      "table": "state_max",
+      "rows": "51",
+      "compressed_bytes": "1614",
+      "uncompressed_bytes": "3763",
+      "bytes_on_disk": "1808"
+    },
+    {
+      "table": "transactions",
+      "rows": "1048575",
+      "compressed_bytes": "42889033",
+      "uncompressed_bytes": "143155577",
+      "bytes_on_disk": "42923625"
+    },
+    {
+      "table": "transactions_baseline",
+      "rows": "1048575",
+      "compressed_bytes": "72161062",
+      "uncompressed_bytes": "195710021",
+      "bytes_on_disk": "72171505"
+    }
+  ],
+  "note": "Warm cache, one warmup, FINAL merges before measurements; milliseconds depend on hardware."
+}

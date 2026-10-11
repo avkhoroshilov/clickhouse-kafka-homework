@@ -1,0 +1,6 @@
+"us_state","cat_id","max_amount","source_file","source_row"
+"CA","grocery_pos",999.99,"demo.csv",7
+"FL","entertainment",500.75,"demo.csv",10
+"NY","shopping_net",1500.25,"demo.csv",8
+"TX","health_fitness",375.1,"demo.csv",13
+"WA","travel",1200,"demo.csv",5

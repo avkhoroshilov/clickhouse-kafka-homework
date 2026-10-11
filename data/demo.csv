@@ -1,0 +1,17 @@
+transaction_time,merch,cat_id,amount,name_1,name_2,gender,street,one_city,us_state,post_code,lat,lon,population_city,jobs,merchant_lat,merchant_lon,target
+2019-01-01 12:01,Demo Merchant,shopping_net,120.50,Demo,Customer,F,Demo Street,Demo City,CA,00123,40.0,-70.0,10000,Demo Job,40.1,-70.1,0
+2019-01-01 12:02,Demo Merchant,grocery_pos,80.00,Demo,Customer,F,Demo Street,Demo City,NY,00123,40.0,-70.0,10000,Demo Job,40.1,-70.1,0
+2019-01-01 12:03,Demo Merchant,gas_transport,65.45,Demo,Customer,F,Demo Street,Demo City,TX,00123,40.0,-70.0,10000,Demo Job,40.1,-70.1,0
+2019-01-01 12:04,Demo Merchant,food_dining,240.00,Demo,Customer,F,Demo Street,Demo City,FL,00123,40.0,-70.0,10000,Demo Job,40.1,-70.1,0
+2019-01-01 12:05,Demo Merchant,travel,1200.00,Demo,Customer,F,Demo Street,Demo City,WA,00123,40.0,-70.0,10000,Demo Job,40.1,-70.1,0
+2019-01-01 12:06,Demo Merchant,gas_transport,999.99,Demo,Customer,F,Demo Street,Demo City,CA,00123,40.0,-70.0,10000,Demo Job,40.1,-70.1,0
+2019-02-01 12:07,Demo Merchant,grocery_pos,999.99,Demo,Customer,F,Demo Street,Demo City,CA,00123,40.0,-70.0,10000,Demo Job,40.1,-70.1,0
+2019-02-01 12:08,Demo Merchant,shopping_net,1500.25,Demo,Customer,F,Demo Street,Demo City,NY,00123,40.0,-70.0,10000,Demo Job,40.1,-70.1,0
+2019-02-01 12:09,Demo Merchant,health_fitness,375.10,Demo,Customer,F,Demo Street,Demo City,TX,00123,40.0,-70.0,10000,Demo Job,40.1,-70.1,0
+2019-02-01 12:10,Demo Merchant,entertainment,500.75,Demo,Customer,F,Demo Street,Demo City,FL,00123,40.0,-70.0,10000,Demo Job,40.1,-70.1,0
+2019-02-01 12:11,Demo Merchant,shopping_pos,15.00,Demo,Customer,F,Demo Street,Demo City,WA,00123,40.0,-70.0,10000,Demo Job,40.1,-70.1,0
+2019-02-01 12:12,Demo Merchant,travel,420.00,Demo,Customer,F,Demo Street,Demo City,NY,00123,40.0,-70.0,10000,Demo Job,40.1,-70.1,0
+2019-03-01 12:13,Demo Merchant,health_fitness,375.10,Demo,Customer,F,Demo Street,Demo City,TX,00123,40.0,-70.0,10000,Demo Job,40.1,-70.1,0
+2019-03-01 12:14,Demo Merchant,food_dining,0.01,Demo,Customer,F,Demo Street,Demo City,CA,00123,40.0,-70.0,10000,Demo Job,40.1,-70.1,0
+2019-03-01 12:15,Demo Merchant,travel,10.10,Demo,Customer,F,Demo Street,Demo City,FL,00123,40.0,-70.0,10000,Demo Job,40.1,-70.1,0
+2019-03-01 12:16,Demo Merchant,travel,1199.99,Demo,Customer,F,Demo Street,Demo City,WA,00123,40.0,-70.0,10000,Demo Job,40.1,-70.1,0
