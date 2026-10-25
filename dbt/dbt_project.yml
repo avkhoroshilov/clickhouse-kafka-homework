@@ -1,0 +1,62 @@
+name: transaction_analytics
+version: 1.0.0
+config-version: 2
+profile: transaction_analytics
+require-dbt-version:
+- '>=1.10.0'
+- <1.11.0
+model-paths:
+- models
+macro-paths:
+- macros
+test-paths:
+- tests
+seed-paths:
+- seeds
+clean-targets:
+- target
+- dbt_packages
+- logs
+flags:
+  send_anonymous_usage_stats: false
+vars:
+  raw_database: homework
+  raw_table: transactions
+  small_amount_threshold: 100
+  large_amount_threshold: 500
+  high_risk_rate_pct: 2
+  high_risk_min_frauds: 2
+  merchant_min_transactions: 100
+  merchant_risk_rate_pct: 1
+  hourly_min_transactions: 100
+  hourly_risk_multiplier: 2
+  dbt_date:time_zone: UTC
+  train_source_file: train.csv
+dispatch:
+- macro_namespace: dbt_date
+  search_order:
+  - transaction_analytics
+  - dbt_date
+models:
+  transaction_analytics:
+    +materialized: table
+    +engine: MergeTree()
+    staging:
+      +order_by:
+      - transaction_date
+      - us_state
+      - transaction_id
+      +settings:
+        allow_nullable_key: 1
+      +tags:
+      - staging
+    marts:
+      +order_by: tuple()
+      +tags:
+      - marts
+seeds:
+  transaction_analytics:
+    states:
+      +column_types:
+        us_state: String
+        state_name: String

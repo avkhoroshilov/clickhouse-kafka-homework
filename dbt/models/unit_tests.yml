@@ -1,0 +1,398 @@
+version: 2
+unit_tests:
+- name: staging_normalizes_and_tests_amount_boundaries
+  description: staging normalizes and tests amount boundaries
+  model: stg_transactions
+  given:
+  - input: source('raw', 'transactions')
+    rows:
+    - source_file: train.csv
+      transaction_time: '2020-01-05 23:45:00'
+      merch: ' Shop '
+      cat_id: ' SHOPPING_NET '
+      amount: '99.99'
+      name_1: ' Alice '
+      name_2: ' Smith '
+      gender: ' f '
+      street: 1 Main St
+      one_city: Austin
+      us_state: ' tx '
+      post_code: '00123'
+      lat: '30'
+      lon: '-97'
+      population_city: '10'
+      jobs: Demo
+      merchant_lat: '31'
+      merchant_lon: '-98'
+      target: '1'
+      source_row: 1
+    - source_file: train.csv
+      transaction_time: '2020-01-05 23:45:00'
+      merch: ' Shop '
+      cat_id: ' SHOPPING_NET '
+      amount: '100'
+      name_1: ' Alice '
+      name_2: ' Smith '
+      gender: ' f '
+      street: 1 Main St
+      one_city: Austin
+      us_state: ' tx '
+      post_code: '00123'
+      lat: '30'
+      lon: '-97'
+      population_city: '10'
+      jobs: Demo
+      merchant_lat: '31'
+      merchant_lon: '-98'
+      target: '1'
+      source_row: 2
+    - source_file: train.csv
+      transaction_time: '2020-01-05 23:45:00'
+      merch: ' Shop '
+      cat_id: ' SHOPPING_NET '
+      amount: '499.99'
+      name_1: ' Alice '
+      name_2: ' Smith '
+      gender: ' f '
+      street: 1 Main St
+      one_city: Austin
+      us_state: ' tx '
+      post_code: '00123'
+      lat: '30'
+      lon: '-97'
+      population_city: '10'
+      jobs: Demo
+      merchant_lat: '31'
+      merchant_lon: '-98'
+      target: '1'
+      source_row: 3
+    - source_file: train.csv
+      transaction_time: '2020-01-05 23:45:00'
+      merch: ' Shop '
+      cat_id: ' SHOPPING_NET '
+      amount: '500'
+      name_1: ' Alice '
+      name_2: ' Smith '
+      gender: ' f '
+      street: 1 Main St
+      one_city: Austin
+      us_state: ' tx '
+      post_code: '00123'
+      lat: '30'
+      lon: '-97'
+      population_city: '10'
+      jobs: Demo
+      merchant_lat: '31'
+      merchant_lon: '-98'
+      target: '1'
+      source_row: 4
+    - source_file: train.csv
+      transaction_time: '2020-01-05 23:45:00'
+      merch: ' Shop '
+      cat_id: ' SHOPPING_NET '
+      amount: '500.01'
+      name_1: ' Alice '
+      name_2: ' Smith '
+      gender: ' f '
+      street: 1 Main St
+      one_city: Austin
+      us_state: ' tx '
+      post_code: '00123'
+      lat: '30'
+      lon: '-97'
+      population_city: '10'
+      jobs: Demo
+      merchant_lat: '31'
+      merchant_lon: '-98'
+      target: '1'
+      source_row: 5
+  expect:
+    rows:
+    - amount: 99.99
+      amount_bucket: SMALL
+      merchant_name: Shop
+      category: shopping_net
+      gender: F
+      us_state: TX
+      post_code: '00123'
+      transaction_date: '2020-01-05'
+      transaction_hour: 23
+      day_of_week: 7
+      is_fraud: 1
+    - amount: 100.0
+      amount_bucket: MEDIUM
+      merchant_name: Shop
+      category: shopping_net
+      gender: F
+      us_state: TX
+      post_code: '00123'
+      transaction_date: '2020-01-05'
+      transaction_hour: 23
+      day_of_week: 7
+      is_fraud: 1
+    - amount: 499.99
+      amount_bucket: MEDIUM
+      merchant_name: Shop
+      category: shopping_net
+      gender: F
+      us_state: TX
+      post_code: '00123'
+      transaction_date: '2020-01-05'
+      transaction_hour: 23
+      day_of_week: 7
+      is_fraud: 1
+    - amount: 500.0
+      amount_bucket: LARGE
+      merchant_name: Shop
+      category: shopping_net
+      gender: F
+      us_state: TX
+      post_code: '00123'
+      transaction_date: '2020-01-05'
+      transaction_hour: 23
+      day_of_week: 7
+      is_fraud: 1
+    - amount: 500.01
+      amount_bucket: LARGE
+      merchant_name: Shop
+      category: shopping_net
+      gender: F
+      us_state: TX
+      post_code: '00123'
+      transaction_date: '2020-01-05'
+      transaction_hour: 23
+      day_of_week: 7
+      is_fraud: 1
+  overrides:
+    vars:
+      train_source_file: train.csv
+- name: category_fraud_denominator_and_sums
+  description: category fraud denominator and sums
+  model: mart_fraud_by_category
+  given:
+  - input: ref('stg_transactions')
+    rows:
+    - transaction_time: '2020-01-05 23:45:00'
+      transaction_date: '2020-01-05'
+      transaction_hour: 23
+      day_of_week: 7
+      customer_id: c1
+      merchant_id: m1
+      merchant_name: Shop
+      category: shopping_net
+      us_state: TX
+      amount: 10
+      is_fraud: 0
+      amount_bucket: SMALL
+    - transaction_time: '2020-01-05 23:45:00'
+      transaction_date: '2020-01-05'
+      transaction_hour: 23
+      day_of_week: 7
+      customer_id: c1
+      merchant_id: m1
+      merchant_name: Shop
+      category: shopping_net
+      us_state: TX
+      amount: 20
+      is_fraud: 1
+      amount_bucket: SMALL
+    - transaction_time: '2020-01-05 23:45:00'
+      transaction_date: '2020-01-05'
+      transaction_hour: 23
+      day_of_week: 7
+      customer_id: c1
+      merchant_id: m1
+      merchant_name: Shop
+      category: travel
+      us_state: TX
+      amount: 5
+      is_fraud: 0
+      amount_bucket: SMALL
+  expect:
+    rows:
+    - category: shopping_net
+      transaction_count: 2
+      fraud_count: 1
+      fraud_rate: 50
+      total_amount: 30
+      fraud_amount: 20
+      avg_amount: 15
+    - category: travel
+      transaction_count: 1
+      fraud_count: 0
+      fraud_rate: 0
+      total_amount: 5
+      fraud_amount: 0
+      avg_amount: 5
+- name: customer_risk_inclusive_threshold_and_minimum_frauds
+  description: customer risk inclusive threshold and minimum frauds
+  model: mart_customer_risk_profile
+  given:
+  - input: ref('stg_transactions')
+    rows:
+    - transaction_time: '2020-01-05 23:45:00'
+      transaction_date: '2020-01-05'
+      transaction_hour: 23
+      day_of_week: 7
+      customer_id: high
+      merchant_id: m1
+      merchant_name: Shop
+      category: shopping_net
+      us_state: TX
+      amount: 10
+      is_fraud: 1
+      amount_bucket: SMALL
+    - transaction_time: '2020-01-05 23:45:00'
+      transaction_date: '2020-01-05'
+      transaction_hour: 23
+      day_of_week: 7
+      customer_id: high
+      merchant_id: m1
+      merchant_name: Shop
+      category: shopping_net
+      us_state: TX
+      amount: 10
+      is_fraud: 1
+      amount_bucket: SMALL
+    - transaction_time: '2020-01-05 23:45:00'
+      transaction_date: '2020-01-05'
+      transaction_hour: 23
+      day_of_week: 7
+      customer_id: high
+      merchant_id: m1
+      merchant_name: Shop
+      category: shopping_net
+      us_state: TX
+      amount: 10
+      is_fraud: 0
+      amount_bucket: SMALL
+    - transaction_time: '2020-01-05 23:45:00'
+      transaction_date: '2020-01-05'
+      transaction_hour: 23
+      day_of_week: 7
+      customer_id: high
+      merchant_id: m1
+      merchant_name: Shop
+      category: shopping_net
+      us_state: TX
+      amount: 10
+      is_fraud: 0
+      amount_bucket: SMALL
+    - transaction_time: '2020-01-05 23:45:00'
+      transaction_date: '2020-01-05'
+      transaction_hour: 23
+      day_of_week: 7
+      customer_id: one_fraud
+      merchant_id: m1
+      merchant_name: Shop
+      category: shopping_net
+      us_state: TX
+      amount: 10
+      is_fraud: 1
+      amount_bucket: SMALL
+    - transaction_time: '2020-01-05 23:45:00'
+      transaction_date: '2020-01-05'
+      transaction_hour: 23
+      day_of_week: 7
+      customer_id: one_fraud
+      merchant_id: m1
+      merchant_name: Shop
+      category: shopping_net
+      us_state: TX
+      amount: 10
+      is_fraud: 0
+      amount_bucket: SMALL
+    - transaction_time: '2020-01-05 23:45:00'
+      transaction_date: '2020-01-05'
+      transaction_hour: 23
+      day_of_week: 7
+      customer_id: below_rate
+      merchant_id: m1
+      merchant_name: Shop
+      category: shopping_net
+      us_state: TX
+      amount: 10
+      is_fraud: 1
+      amount_bucket: SMALL
+    - transaction_time: '2020-01-05 23:45:00'
+      transaction_date: '2020-01-05'
+      transaction_hour: 23
+      day_of_week: 7
+      customer_id: below_rate
+      merchant_id: m1
+      merchant_name: Shop
+      category: shopping_net
+      us_state: TX
+      amount: 10
+      is_fraud: 1
+      amount_bucket: SMALL
+    - transaction_time: '2020-01-05 23:45:00'
+      transaction_date: '2020-01-05'
+      transaction_hour: 23
+      day_of_week: 7
+      customer_id: below_rate
+      merchant_id: m1
+      merchant_name: Shop
+      category: shopping_net
+      us_state: TX
+      amount: 10
+      is_fraud: 0
+      amount_bucket: SMALL
+    - transaction_time: '2020-01-05 23:45:00'
+      transaction_date: '2020-01-05'
+      transaction_hour: 23
+      day_of_week: 7
+      customer_id: below_rate
+      merchant_id: m1
+      merchant_name: Shop
+      category: shopping_net
+      us_state: TX
+      amount: 10
+      is_fraud: 0
+      amount_bucket: SMALL
+    - transaction_time: '2020-01-05 23:45:00'
+      transaction_date: '2020-01-05'
+      transaction_hour: 23
+      day_of_week: 7
+      customer_id: below_rate
+      merchant_id: m1
+      merchant_name: Shop
+      category: shopping_net
+      us_state: TX
+      amount: 10
+      is_fraud: 0
+      amount_bucket: SMALL
+    - transaction_time: '2020-01-05 23:45:00'
+      transaction_date: '2020-01-05'
+      transaction_hour: 23
+      day_of_week: 7
+      customer_id: low
+      merchant_id: m1
+      merchant_name: Shop
+      category: shopping_net
+      us_state: TX
+      amount: 10
+      is_fraud: 0
+      amount_bucket: SMALL
+  expect:
+    rows:
+    - customer_id: high
+      risk_level: HIGH
+      fraud_rate: 50
+      fraud_count: 2
+    - customer_id: one_fraud
+      risk_level: MEDIUM
+      fraud_rate: 50
+      fraud_count: 1
+    - customer_id: below_rate
+      risk_level: MEDIUM
+      fraud_rate: 40
+      fraud_count: 2
+    - customer_id: low
+      risk_level: LOW
+      fraud_rate: 0
+      fraud_count: 0
+  overrides:
+    vars:
+      high_risk_rate_pct: 50
+      high_risk_min_frauds: 2

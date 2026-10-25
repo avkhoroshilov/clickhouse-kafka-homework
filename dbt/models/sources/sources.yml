@@ -1,0 +1,51 @@
+version: 2
+sources:
+- name: raw
+  description: Существующая таблица предыдущей домашней работы ClickHouse/Kafka.
+  schema: '{{ var(''raw_database'') }}'
+  tables:
+  - name: transactions
+    identifier: '{{ var(''raw_table'') }}'
+    description: homework.transactions из sql/01_schema.sql. Staging выбирает только
+      train_source_file.
+    columns:
+    - name: source_row
+      description: Номер записи CSV начиная с 1, без заголовка.
+    - name: source_file
+      description: Имя файла для аудита.
+    - name: transaction_time
+      description: Дата и время без указанного часового пояса, исходное значение.
+    - name: merch
+      description: Название мерчанта.
+    - name: cat_id
+      description: Категория операции (14 значений).
+    - name: amount
+      description: Сумма в условных денежных единицах; код валюты отсутствует.
+    - name: name_1
+      description: Имя клиента.
+    - name: name_2
+      description: Фамилия клиента.
+    - name: gender
+      description: Пол M/F.
+    - name: street
+      description: Адрес клиента.
+    - name: one_city
+      description: Город клиента.
+    - name: us_state
+      description: Штат или округ DC.
+    - name: post_code
+      description: Почтовый индекс; хранится строкой с сохранением ведущих нулей.
+    - name: lat
+      description: Широта клиента.
+    - name: lon
+      description: Долгота клиента.
+    - name: population_city
+      description: Население города.
+    - name: jobs
+      description: Профессия клиента.
+    - name: merchant_lat
+      description: Широта мерчанта.
+    - name: merchant_lon
+      description: Долгота мерчанта.
+    - name: target
+      description: 'Наблюдаемая метка фрода: 0 или 1.'
