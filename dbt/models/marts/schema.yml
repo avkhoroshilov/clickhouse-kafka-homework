@@ -1,0 +1,209 @@
+version: 2
+models:
+- name: mart_daily_state_metrics
+  description: 'Дневные метрики по штатам и DC. Зерно: дата x штат.'
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - transaction_date
+        - us_state
+  columns:
+  - name: transaction_date
+    description: Календарная дата операции.
+    data_tests:
+    - not_null
+  - name: us_state
+    description: Код штата или DC в верхнем регистре.
+    data_tests:
+    - not_null
+  - name: transaction_count
+    description: Общее число транзакций в группе.
+  - name: total_amount
+    description: Точный оборот всех транзакций Decimal(38,2).
+  - name: avg_amount
+    description: Средний чек всех операций, Float64.
+  - name: p95_amount
+    description: Точный дискретный P95 через quantileExact(0.95).
+  - name: large_transaction_count
+    description: Количество операций в сегменте LARGE.
+  - name: large_transaction_share_pct
+    description: Доля LARGE в процентах от 0 до 100.
+- name: mart_fraud_by_category
+  description: Фрод по 14 категориям; сортировать по fraud_rate DESC.
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - category
+  columns:
+  - name: category
+    description: Категория в нижнем регистре.
+    data_tests:
+    - not_null
+  - name: transaction_count
+    description: Общее число транзакций в группе.
+  - name: fraud_count
+    description: Количество транзакций is_fraud=1.
+  - name: fraud_rate
+    description: 100 * fraud_count / transaction_count, проценты 0-100, без округления.
+    data_tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        arguments:
+          min_value: 0
+          max_value: 100
+  - name: total_amount
+    description: Точный оборот всех транзакций Decimal(38,2).
+  - name: fraud_amount
+    description: Сумма транзакций с меткой фрода; Decimal(38,2).
+  - name: avg_amount
+    description: Средний чек всех операций, Float64.
+- name: mart_fraud_by_state
+  description: География фрода по 50 штатам и DC.
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - us_state
+  columns:
+  - name: us_state
+    description: Код штата или DC в верхнем регистре.
+    data_tests:
+    - not_null
+  - name: transaction_count
+    description: Общее число транзакций в группе.
+  - name: fraud_count
+    description: Количество транзакций is_fraud=1.
+  - name: fraud_rate
+    description: 100 * fraud_count / transaction_count, проценты 0-100, без округления.
+  - name: unique_customers
+    description: Точное количество различных прокси-ключей клиента.
+  - name: unique_merchants
+    description: Точное количество различных нормализованных мерчантов.
+  - name: total_amount
+    description: Точный оборот всех транзакций Decimal(38,2).
+  - name: fraud_amount
+    description: Сумма транзакций с меткой фрода; Decimal(38,2).
+- name: mart_customer_risk_profile
+  description: Ретроспективный профиль риска клиента. Содержит известные метки всей
+    истории, не прогноз.
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - customer_id
+  columns:
+  - name: customer_id
+    description: Прокси-ключ по нормализованным имени, фамилии и адресу. Не идентификатор
+      карты.
+    data_tests:
+    - not_null
+  - name: first_transaction_at
+    description: Первая наблюдаемая операция клиента в train.
+  - name: last_transaction_at
+    description: Последняя наблюдаемая операция клиента в train.
+  - name: transaction_count
+    description: Общее число транзакций в группе.
+  - name: fraud_count
+    description: Количество транзакций is_fraud=1.
+  - name: fraud_rate
+    description: 100 * fraud_count / transaction_count, проценты 0-100, без округления.
+  - name: total_amount
+    description: Точный оборот всех транзакций Decimal(38,2).
+  - name: fraud_amount
+    description: Сумма транзакций с меткой фрода; Decimal(38,2).
+  - name: avg_amount
+    description: Средний чек всех операций, Float64.
+  - name: unique_merchants
+    description: Точное количество различных нормализованных мерчантов.
+  - name: unique_categories
+    description: Количество различных категорий.
+  - name: risk_level
+    description: 'HIGH: >=2 фродов и fraud_rate>=2%; MEDIUM: есть фрод; иначе LOW.
+      Пороги vars.'
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - HIGH
+          - MEDIUM
+          - LOW
+- name: mart_hourly_fraud_pattern
+  description: Временные окна ISO-день недели x час и относительный уровень риска.
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - day_of_week
+        - transaction_hour
+  columns:
+  - name: day_of_week
+    description: 'ISO-день недели: 1 понедельник, 7 воскресенье; через dbt_date.'
+    data_tests:
+    - not_null
+  - name: transaction_hour
+    description: Час исходного времени, 0-23.
+    data_tests:
+    - not_null
+  - name: transaction_count
+    description: Общее число транзакций в группе.
+  - name: fraud_count
+    description: Количество транзакций is_fraud=1.
+  - name: fraud_rate
+    description: 100 * fraud_count / transaction_count, проценты 0-100, без округления.
+  - name: total_amount
+    description: Точный оборот всех транзакций Decimal(38,2).
+  - name: fraud_amount
+    description: Сумма транзакций с меткой фрода; Decimal(38,2).
+  - name: overall_fraud_rate
+    description: Взвешенная доля фрода всего train в процентах.
+  - name: risk_lift
+    description: fraud_rate / overall_fraud_rate; NULL если общий уровень фрода нулевой.
+  - name: is_high_risk_window
+    description: 1 при >=100 операциях и fraud_rate>=2*baseline>0. Пороги vars.
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - 0
+          - 1
+          quote: false
+- name: mart_merchant_analytics
+  description: Оборот и риск по нормализованному имени мерчанта.
+  data_tests:
+  - dbt_utils.unique_combination_of_columns:
+      arguments:
+        combination_of_columns:
+        - merchant_id
+  columns:
+  - name: merchant_id
+    description: Хеш нормализованного названия мерчанта; не идентификатор терминала.
+    data_tests:
+    - not_null
+  - name: merchant_name
+    description: Название мерчанта без крайних пробелов.
+  - name: transaction_count
+    description: Общее число транзакций в группе.
+  - name: fraud_count
+    description: Количество транзакций is_fraud=1.
+  - name: fraud_rate
+    description: 100 * fraud_count / transaction_count, проценты 0-100, без округления.
+  - name: total_amount
+    description: Точный оборот всех транзакций Decimal(38,2).
+  - name: fraud_amount
+    description: Сумма транзакций с меткой фрода; Decimal(38,2).
+  - name: avg_amount
+    description: Средний чек всех операций, Float64.
+  - name: unique_customers
+    description: Точное количество различных прокси-ключей клиента.
+  - name: unique_categories
+    description: Количество различных категорий.
+  - name: is_suspicious
+    description: 1 при >=100 операциях и fraud_rate>=1%, иначе 0. Пороги vars.
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - 0
+          - 1
+          quote: false

@@ -1,0 +1,21 @@
+[sqlfluff]
+dialect = clickhouse
+templater = dbt
+max_line_length = 110
+large_file_skip_byte_limit = 0
+processes = 1
+# ClickHouse function names are case-sensitive and use native camelCase.
+exclude_rules = RF04, CP03
+
+[sqlfluff:templater:dbt]
+project_dir = .
+profiles_dir = .
+profile = transaction_analytics
+target = dev
+dbt_skip_compilation_error = False
+
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.functions]
+extended_capitalisation_policy = consistent

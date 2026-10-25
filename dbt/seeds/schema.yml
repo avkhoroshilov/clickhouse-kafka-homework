@@ -1,0 +1,14 @@
+version: 2
+seeds:
+- name: states
+  description: 50 штатов США и округ Колумбия, который присутствует в train.
+  columns:
+  - name: us_state
+    description: Двухбуквенный код региона.
+    data_tests:
+    - not_null
+    - unique
+  - name: state_name
+    description: Название региона.
+    data_tests:
+    - not_null

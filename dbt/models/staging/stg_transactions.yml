@@ -1,0 +1,123 @@
+version: 2
+models:
+- name: stg_transactions
+  description: 'Только train_source_file из raw: нормализация, типизация, ключи и
+    признаки времени/суммы.'
+  columns:
+  - name: transaction_id
+    description: Суррогатный ключ по source_file и source_row из предыдущей домашней
+      работы.
+    data_tests:
+    - not_null
+    - unique
+  - name: customer_id
+    description: Прокси-ключ по нормализованным имени, фамилии и адресу. Не идентификатор
+      карты.
+    data_tests:
+    - not_null
+  - name: merchant_id
+    description: Хеш нормализованного названия мерчанта; не идентификатор терминала.
+    data_tests:
+    - not_null
+  - name: transaction_time
+    description: Время CSV; UTC применяется технически без сдвига исходных часов.
+    data_tests:
+    - not_null
+  - name: transaction_date
+    description: Календарная дата операции.
+  - name: transaction_hour
+    description: Час исходного времени, 0-23.
+  - name: day_of_week
+    description: 'ISO-день недели: 1 понедельник, 7 воскресенье; через dbt_date.'
+  - name: merchant_name
+    description: Название мерчанта без крайних пробелов.
+  - name: category
+    description: Категория в нижнем регистре.
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - entertainment
+          - food_dining
+          - gas_transport
+          - grocery_net
+          - grocery_pos
+          - health_fitness
+          - home
+          - kids_pets
+          - misc_net
+          - misc_pos
+          - personal_care
+          - shopping_net
+          - shopping_pos
+          - travel
+  - name: amount
+    description: Сумма Decimal(18,2); преобразование из исходного Decimal сохраняет
+      копейки.
+    data_tests:
+    - not_null
+    - dbt_expectations.expect_column_values_to_be_between:
+        arguments:
+          min_value: 0
+  - name: amount_bucket
+    description: 'SMALL: <100; MEDIUM: [100,500); LARGE: >=500. Пороги задаются vars.'
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - SMALL
+          - MEDIUM
+          - LARGE
+  - name: first_name
+    description: Очищенное имя.
+  - name: last_name
+    description: Очищенная фамилия.
+  - name: gender
+    description: Нормализованный пол.
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - M
+          - F
+  - name: street
+    description: Очищенный адрес.
+  - name: city
+    description: Очищенный город.
+  - name: us_state
+    description: Код штата или DC в верхнем регистре.
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('states')
+          field: us_state
+  - name: post_code
+    description: Строковый почтовый индекс; ведущие нули сохранены.
+  - name: latitude
+    description: Широта клиента Float64.
+  - name: longitude
+    description: Долгота клиента Float64.
+  - name: city_population
+    description: Население города UInt64.
+  - name: job
+    description: Профессия.
+  - name: merchant_latitude
+    description: Широта мерчанта Float64.
+  - name: merchant_longitude
+    description: Долгота мерчанта Float64.
+  - name: is_fraud
+    description: 'Метка train: 1 фрод, 0 обычная операция; UInt8.'
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values:
+          - 0
+          - 1
+          quote: false
+  - name: source_row
+    description: Номер записи CSV начиная с 1, без заголовка.
+  - name: source_file
+    description: Имя файла для аудита.
